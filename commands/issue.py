@@ -1,19 +1,21 @@
 import click
+from signals import echo
 
 
 def create(client):
-    click.echo('creating issue')
+    echo.send(msg='creating issue')
+    echo.send(msg='result')
 
 
-def get(client, issue_id):
-    click.echo('retriving issue - {}'.format(issue_id))
-    res = client.get_issue(issue_id)
-    return res
+def get(client, issue):
+    click.echo('retriving issue - {}'.format(issue))
+    # res = client.get_issue(issue)
+    # return res
 
 
-def delete(client, issue_id):
-    click.echo('deleting issue - {}'.format(issue_id))
+def delete(client, issue):
+    click.echo('deleting issue - {}'.format(issue))
 
 
-def edit(client, issue_id):
-    click.echo('edit issue - {}'.format(issue_id))
+def edit(client, issue):
+    click.echo('edit issue - {}'.format(issue))
