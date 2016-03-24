@@ -1,12 +1,17 @@
 import click
 
-import commands
+from commands import issue as issue_cmd
+
+from client import Client
 
 
 class Config(object):
 
     def __init__(self):
+        username = click.prompt("Username", type=str)
+        password = click.prompt("Password", type=str, hide_input=True)
         self.verbose = False
+        self.client = Client(username, password)
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
 
@@ -19,11 +24,34 @@ def cli(config, verbose):
     config.verbose = verbose
 
 
-@cli.command()
-@click.option('--string', default='World',
-              help='This is the thing is greeted')
-@click.option('--repeat', default=1,
-              help='How many times should be repeated')
+@cli.group()
+def issue():
+    """Issue related actions"""
+    pass
+
+
+@issue.command()
 @pass_config
-def say(config, string, repeat):
-    commands.say(config, string, repeat)
+def create(config):
+    issue_cmd.create(config.client)
+
+
+@issue.command()
+@click.argument('issue_id')
+@pass_config
+def get(config, issue_id):
+    issue_cmd.get(config.client, issue_id)
+
+
+@issue.command()
+@click.argument('issue_id')
+@pass_config
+def delete(config, issue_id):
+    issue_cmd.delete(config.client, issue_id)
+
+
+@issue.command()
+@click.argument('issue_id')
+@pass_config
+def edit(config, issue_id):
+    issue_cmd.edit(config.client, issue_id)
