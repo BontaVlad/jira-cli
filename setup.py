@@ -6,6 +6,7 @@ setup(
     py_modules=['jira_cli'],
     install_requires=[
         'Click',
+        'requests',
     ],
     entry_points='''
         [console_scripts]
