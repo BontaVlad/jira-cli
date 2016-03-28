@@ -9,8 +9,6 @@ def create(client):
 
 def get(client, issue):
     click.echo('retriving issue - {}'.format(issue))
-    # res = client.get_issue(issue)
-    # return res
 
 
 def delete(client, issue):
