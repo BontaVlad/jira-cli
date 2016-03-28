@@ -1,15 +1,10 @@
-import os
 import logging
-
-import click
-try:
-    import ConfigParser as configparser
-except ImportError:
-    import configparser
 
 from commands import issue as issue_cmd
 from signals import echo
+from config import pass_config
 
+import click
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -27,34 +22,6 @@ handler.setFormatter(formatter)
 # add the handlers to the logger
 
 logger.addHandler(handler)
-
-
-APP_NAME = 'jira-cli'
-
-
-def read_config():
-    cfg = os.path.join(click.get_app_dir(APP_NAME), 'config.ini')
-    parser = configparser.RawConfigParser()
-    parser.read([cfg])
-    rv = {}
-    for section in parser.sections():
-        for key, value in parser.items(section):
-            rv['%s.%s' % (section, key)] = value
-    return rv
-
-
-class Config(object):
-
-    def __init__(self):
-        config = read_config()
-        if not config:
-            if click.confirm('Seems that you dont have a config file, do you'
-                             ' want me to create one for you?'):
-                click.echo('Well done!')
-        self.verbose = False
-        self.log = False
-
-pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
 @echo.connect
@@ -79,6 +46,12 @@ def cli(config, verbose, log):
     config.log = log
 
 
+@cli.command()
+@pass_config
+def setup(config):
+    config.setup()
+
+
 @cli.group()
 def issue():
     """Issue related actions.
@@ -87,27 +60,23 @@ def issue():
 
 
 @issue.command()
-@pass_config
-def create(config):
+def create():
     issue_cmd.create()
 
 
 @issue.command()
 @click.argument('issue')
-@pass_config
-def get(config, issue):
+def get(issue):
     issue_cmd.get(issue)
 
 
 @issue.command()
 @click.argument('issue')
-@pass_config
-def delete(config, issue):
+def delete(issue):
     issue_cmd.delete(issue)
 
 
 @issue.command()
 @click.argument('issue')
-@pass_config
-def edit(config, issue):
+def edit(issue):
     issue_cmd.edit(issue)
